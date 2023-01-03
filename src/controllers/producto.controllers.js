@@ -68,6 +68,7 @@ export const getProductosInhabilitados = async (req, res) => {
 }
 // Autor: Anderson Salazar
 // 24/11/22
+// HU- Listar productos con bajo stock
 /* Agregamos codigo de status 404 para los errores de no encontrarse los productos*/
 export const getProductoByStockMinimo= async (req, res) => {
   try {
