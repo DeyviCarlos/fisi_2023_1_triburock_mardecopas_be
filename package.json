@@ -1,0 +1,35 @@
+{
+  "name": "Backend_Pyto_CP_mysql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel src --out-dir build",
+    "dev": "nodemon src/index.js --exec babel-node",
+    "start": "node build/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/node": "^7.19.1",
+    "bcrypt": "^5.1.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "helmet": "^6.0.0",
+    "html-pdf": "^3.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.6.1",
+    "morgan": "^1.10.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.20",
+    "promise-mysql": "^5.2.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.20.7",
+    "@babel/core": "^7.20.7",
+    "@babel/preset-env": "^7.20.2"
+  }
+}
