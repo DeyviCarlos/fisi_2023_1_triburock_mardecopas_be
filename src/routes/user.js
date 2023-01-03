@@ -4,7 +4,7 @@ import { isAdmin, isJefeAlmacen, verifyToken } from "../middlewares/authJwt";
 import { checkExistingUser } from "../middlewares/verifySignUp";
 
 const router = Router();
-
+// ROUTES
 router.get('/', [verifyToken, isAdmin],userCtrl.getUsers);
 router.get('/inhabilitados',[verifyToken, isAdmin], userCtrl.getUsersInhabiltados);
 router.get('/read/:dni', [verifyToken, isAdmin],userCtrl.getUserDni);
