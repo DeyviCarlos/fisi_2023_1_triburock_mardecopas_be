@@ -1,5 +1,5 @@
 import { hashPassword, comparePassword } from "../core/bcrypt";
-
+// PARA LA CONEXION
 let mysql = require('mysql');
 const { promisify } = require('util')
 var config_mysql = require('../config_mysql.js')
