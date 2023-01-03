@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import { createRoles } from './libs/initialSetup'
 
 
+import categoriaRoutes from './routes/categoria'
 import auhtRoutes from './routes/auth'
 import usersRoutes from './routes/user'
 
@@ -21,6 +22,7 @@ app.use(cors(corsOptions))
 app.use(morgan("dev"));
 app.use(express.json());
 
+app.use('/api/categoria',categoriaRoutes)
 app.use('/api/auth',auhtRoutes)
 app.use('/api/users',usersRoutes)
 
