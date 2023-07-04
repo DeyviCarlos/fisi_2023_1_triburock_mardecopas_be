@@ -1,8 +1,9 @@
 let config_mysql = {
-    host: 'rafagaserver.mysql.database.azure.com',
-    database:'rafaga_bd',
-    user: 'rafaga',
-    password:'Teamtaller9'
-  };
+  host: 'mardecopasserver.mysql.database.azure.com',
+  database:'mardecopas_bd',
+  user: 'mardecopas',
+  password:'TeamAppDistribuidas2'
+};
+
   
 module.exports = config_mysql;
