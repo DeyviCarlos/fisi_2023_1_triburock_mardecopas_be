@@ -1,6 +1,6 @@
 import express from 'express'
 import morgan from 'morgan'
-
+import path from 'path'
 import { createRoles } from './libs/initialSetup'
 
 import productosRoutes from './routes/producto'
@@ -18,6 +18,7 @@ let corsOptions = {
 let app = express();
 app.disable("x-powered-by");
 app.use(cors(corsOptions))
+app.use(express.static(path.join(__dirname, '../reportes')));
 //createRoles();
 app.use(morgan("dev"));
 app.use(express.json());

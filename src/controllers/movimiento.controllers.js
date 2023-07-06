@@ -6,10 +6,17 @@ import { BadRequestException } from "../exceptions/BadRequestException";
 import { InternalServerException } from "../exceptions/InternalServerException";
 import { NotFoundException } from "../exceptions/NotFoundException";
 import ERROR_MESSAGE from "../constants/error.enum";
+import {containerReport,blobServiceClient,DOMINIOFILE} from "../config"
+import path from 'path'
+import fs from 'fs'
+import pdf from 'html-pdf' 
+
 let mysql = require('mysql');
 const { promisify } = require('util')
 var config_mysql = require('../config_mysql.js')
 
+
+const ubicacionPlantilla = require.resolve("./../tpl/plantilla.html");
 
 // Autor: Jonatan Pacora
 // 30/11/22
@@ -357,27 +364,32 @@ export const getMovimientosAnulados = async (req, res) => {
  CUS 29 generar reporte de movimiento*/
 export const getReporte = async (req, res) => {
   try{
-    /*const { codigo } = req.params;
-    let movimiento = await Movimiento.findOne({ codigo: codigo });
+    const { codigo } = req.params;
+    console.log("codigo: ",codigo)
+    // let movimiento = await Movimiento.findOne({ codigo: codigo });
+
+    // console.log(movimiento)
     let contenidoHtml = fs.readFileSync(ubicacionPlantilla, 'utf8')
-    var productos=movimiento.lista_items
+    console.log(contenidoHtml)
+    contenidoHtml = contenidoHtml.replace("{{codigoMovimiento}}", codigo);
+    // var productos=movimiento.lista_items
     const formateador = new Intl.NumberFormat("en", { style: "currency", "currency": "PEN" });
     // Generar el HTML de la tabla
     let tabla = "";
     let subtotal = 0;
-    for (const producto of productos) {
-        // Aumentar el total
-        const totalProducto = producto.cantidad * producto.precio;
-        subtotal += totalProducto;
-        // Y concatenar los productos
-        tabla += `<tr>
-        <td>${producto.nombre}</td>
-        <td>${producto.descripcion}</td>
-        <td>${producto.cantidad}</td>
-        <td>${formateador.format(producto.precio)}</td>
-        <td>${formateador.format(totalProducto)}</td>
-        </tr>`;
-    }
+    // for (const producto of productos) {
+    //     // Aumentar el total
+    //     const totalProducto = producto.cantidad * producto.precio;
+    //     subtotal += totalProducto;
+    //     // Y concatenar los productos
+    //     tabla += `<tr>
+    //     <td>${producto.nombre}</td>
+    //     <td>${producto.descripcion}</td>
+    //     <td>${producto.cantidad}</td>
+    //     <td>${formateador.format(producto.precio)}</td>
+    //     <td>${formateador.format(totalProducto)}</td>
+    //     </tr>`;
+    // }
     const descuento = 0;
     const subtotalConDescuento = subtotal - descuento;
     const impuestos = subtotalConDescuento * 0.16
@@ -387,36 +399,44 @@ export const getReporte = async (req, res) => {
 
     // Y también los otros valores
 
-    contenidoHtml = contenidoHtml.replace("{{fecha}}", movimiento.fecha.toLocaleDateString());
-    contenidoHtml = contenidoHtml.replace("{{estado}}", movimiento.estado);
-    contenidoHtml = contenidoHtml.replace("{{tipo}}", movimiento.tipo);
-    contenidoHtml = contenidoHtml.replace("{{factura}}", movimiento.factura);
-    contenidoHtml = contenidoHtml.replace("{{responsable}}", movimiento.name_responsable);
-    //contenidoHtml = contenidoHtml.replace("{{subtotal}}", formateador.format(subtotal));
-    //contenidoHtml = contenidoHtml.replace("{{descuento}}", formateador.format(descuento));
-    //contenidoHtml = contenidoHtml.replace("{{subtotalConDescuento}}", formateador.format(subtotalConDescuento));
-    //contenidoHtml = contenidoHtml.replace("{{impuestos}}", formateador.format(impuestos));
+    // contenidoHtml = contenidoHtml.replace("{{fecha}}", movimiento.fecha.toLocaleDateString());
+    // contenidoHtml = contenidoHtml.replace("{{estado}}", movimiento.estado);
+    // contenidoHtml = contenidoHtml.replace("{{tipo}}", movimiento.tipo);
+    // contenidoHtml = contenidoHtml.replace("{{factura}}", movimiento.factura);
+    // contenidoHtml = contenidoHtml.replace("{{responsable}}", movimiento.name_responsable);
+    contenidoHtml = contenidoHtml.replace("{{subtotal}}", formateador.format(subtotal));
+    contenidoHtml = contenidoHtml.replace("{{descuento}}", formateador.format(descuento));
+    contenidoHtml = contenidoHtml.replace("{{subtotalConDescuento}}", formateador.format(subtotalConDescuento));
+    contenidoHtml = contenidoHtml.replace("{{impuestos}}", formateador.format(impuestos));
     contenidoHtml = contenidoHtml.replace("{{total}}", formateador.format(subtotal));
     const f=new Date()
     var fecha_archivo=f.toLocaleDateString().replaceAll('/','-')
-    var archivo_generado="./archivos/movimiento-"+movimiento.codigo+" - "+fecha_archivo+".pdf";
+    var archivo_generado="./reportes/movimiento-"+codigo+" - "+fecha_archivo+".pdf";
+    var archivo_generado_azure="reportes/movimiento-"+codigo+" - "+fecha_archivo+".pdf";
+    console.log(archivo_generado_azure)
+    var nombre_archivopdf = "movimiento-"+codigo+" - "+fecha_archivo+".pdf"
+    console.log(nombre_archivopdf)
+
     pdf.create(contenidoHtml).toFile(archivo_generado, (error) => {
         if (error) {
             console.log("Error creando PDF: " + error)
+            return res.status(500).json({mensaje:"Error al obtener el reporte", status: "500"})
         } else {
             console.log("PDF creado correctamente");
         }
     });
-    return res.status(200).json(
-      {status: 200,
-       message: "Se ha obtenido el reporte",
-       data: archivo_generado}
-     );*/
-     return res.status(200).json(
-      {status: 200,
-       message: "Se ha obtenido el reporte",
-       data: "gg"}
-     );
+    setTimeout(() => {
+      let rutaPdf = ""
+      azurePdf(archivo_generado_azure).then(response => {
+        rutaPdf = response;
+        console.log("pdf descargado: ", rutaPdf)
+        res.set({'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename=${nombre_archivopdf}`})
+        response.readableStreamBody.pipe(res);
+      }).catch(error => {
+        return res.status(500).json({ mensaje: "Error al obtener el reporte", status: "500" })
+      });
+    }, 4000)    
   } catch (error) {
     return res.status(500).json(
       {status: 500,
@@ -426,6 +446,50 @@ export const getReporte = async (req, res) => {
   }
 }
 
+//metodo para cargar y descargar el pdf de azure
+const azurePdf = async (archivo_generado_azure) => {
+  try{
+          //subiendo pdf a Azure      
+          const containerClient = blobServiceClient.getContainerClient(containerReport);
+
+          // Crear el contenedor si no existe
+          const createContainerResponse = await containerClient.createIfNotExists();
+          if(!createContainerResponse) console.log("ya existe el contenedor")
+          
+          const filePath = path.join(__dirname, "../../"+archivo_generado_azure);
+          console.log("Ruta del archivo: ",filePath)
+          // Leer el archivo
+          const fileContent = fs.readFileSync(filePath);
+          // Obtener el nombre del archivo sin la ruta
+          const fileName = path.basename(filePath);
+          console.log("nombre: archivo",fileName)
+          // Subir el archivo al contenedor en Azure
+          const blockBlobClient = containerClient.getBlockBlobClient(fileName);
+          const uploadResponse = await blockBlobClient.upload(fileContent, fileContent.length);
+          console.log("Respuesta de subida de archivo:",uploadResponse)
+          
+          fs.unlink(filePath, async (err) => {
+              if (err) {
+                console.error(err);
+                return;
+              }
+              console.log('Archivo temporal eliminado correctamente');
+              
+              
+              
+            });
+
+            //obtener el PDF del contenedor en Azure para mostrar
+            const blobName = fileName;
+            const blobClient = containerClient.getBlobClient(blobName);
+
+            const response = await blobClient.download();
+
+            return response;
+  }catch(err){
+      console.log(err)
+  }  
+}
 
 //---------------------------------- movimientos de entrada-----------------------------------
 export const createMovimientoEntrada = async (req, res) => {
