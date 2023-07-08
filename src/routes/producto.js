@@ -6,7 +6,7 @@ import {authJwt} from '../middlewares'
 router.get('/obtener-productos-habilitados', productosCtrl.getProductos);
 router.get('/obtener-productos-deshabilitados', productosCtrl.getProductosInhabilitados);
 router.get('/obtener-productos/por-codigo/:codigo', productosCtrl.getProductoByCode);
-router.get('/obtener-productos-stock-mínimo', productosCtrl.getProductoByStockMinimo); /// Enpoint de listar stock minimo
+router.get('/obtener-productos-stock-minimo', productosCtrl.getProductoByStockMinimo); /// Enpoint de listar stock minimo
 router.get('/obtener-productos/por-id/:_id', productosCtrl.getProductoById);
 
 router.post('/agregar-productos', [authJwt.verifyToken,authJwt.isJefeAlmacen],productosCtrl.createProducto);
