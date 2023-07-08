@@ -5,7 +5,6 @@ metadata:
   name: logistnet-deployment 
 spec:
   progressDeadlineSeconds: 3600
-  replicas: 1
   selector:
     matchLabels:
       app: logistnet-deployment
@@ -18,4 +17,4 @@ spec:
         - name: logistnet-server
           image: containerregistrylogistnet.azurecr.io/logistnet
           ports:
-           - containerPort: 4000
+            - containerPort: 4000
