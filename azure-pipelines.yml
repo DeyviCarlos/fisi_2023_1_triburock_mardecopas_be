@@ -82,10 +82,11 @@ stages:
             manifests: |
               $(Pipeline.Workspace)/manifests/deployment.yml
               $(Pipeline.Workspace)/manifests/service.yml
-            containers: |
-              $(containerRegistry)/$(imageRepository):$(tag)
             imagePullSecrets: |
               $(imagePullSecret)
+            containers: |
+              $(containerRegistry)/$(imageRepository):$(tag)
+            
             rolloutStatusTimeout: '10'
       
             
