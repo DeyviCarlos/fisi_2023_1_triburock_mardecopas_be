@@ -26,4 +26,6 @@ router.get('/salida/aprobados',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero],
 router.get('/salida/anulados',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getMovimientosAnuladosSalida);
 router.get('/salida/items/:_id',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getItemsSalida);
 router.get('/salida/movSalidaByCode/:codigo'/*,[authJwt.verifyToken,authJwt.isJefeOrAlmacenero]*/, movCtrl.obtenerMovSalidaCompletoByCode);
+
+
 module.exports= router;
