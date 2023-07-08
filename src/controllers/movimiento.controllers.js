@@ -367,30 +367,64 @@ export const getReporte = async (req, res) => {
     const { codigo } = req.params;
     console.log("codigo: ",codigo)
     //obtienes el movimiento
-    // let movimiento = await Movimiento.findOne({ codigo: codigo });
 
-    // console.log(movimiento)
+    let sql2 = `CALL sp_obtener_salida_por_code('${codigo}')`;
+    const pool2 = mysql.createPool(config_mysql)
+    const promiseQuery2 = promisify(pool2.query).bind(pool2)
+    const promisePoolEnd2 = promisify(pool2.end).bind(pool2)
+    const result2 = await promiseQuery2(sql2)
+    promisePoolEnd2()
+    const movimiento_select = JSON.parse(JSON.stringify(result2[0][0]));
+   
+    
+    if (!movimiento_select) {
+      return res.status(404).json({
+        status: 404,
+        message: "No se encontró al movimiento que se quiere anular",
+      });
+    }
+
+    let sql3 = `CALL sp_obtener_productos_movimiento_salida('${movimiento_select.id}')`;
+    const pool3 = mysql.createPool(config_mysql)
+    const promiseQuery3 = promisify(pool3.query).bind(pool3)
+    const promisePoolEnd3 = promisify(pool3.end).bind(pool3)
+    const result3 = await promiseQuery3(sql3)
+    promisePoolEnd3()
+    const lista_items_mov = JSON.parse(JSON.stringify(result3[0]));
+    movimiento_select["items_movimiento"]=lista_items_mov;
+  
+
+    console.log("data: ", movimiento_select)
+
+    // return res.json({
+    //   status: 200,
+    //   message: "Se ha obtenido el movimiento completo por codigo",
+    //   data: {movimiento_select}
+    // });   
+
+
+
     let contenidoHtml = fs.readFileSync(ubicacionPlantilla, 'utf8')
     console.log(contenidoHtml)
     contenidoHtml = contenidoHtml.replace("{{codigoMovimiento}}", codigo);
-    // var productos=movimiento.lista_items
+
     const formateador = new Intl.NumberFormat("en", { style: "currency", "currency": "PEN" });
     // Generar el HTML de la tabla
     let tabla = "";
     let subtotal = 0;
-    // for (const producto of productos) {
-    //     // Aumentar el total
-    //     const totalProducto = producto.cantidad * producto.precio;
-    //     subtotal += totalProducto;
-    //     // Y concatenar los productos
-    //     tabla += `<tr>
-    //     <td>${producto.nombre}</td>
-    //     <td>${producto.descripcion}</td>
-    //     <td>${producto.cantidad}</td>
-    //     <td>${formateador.format(producto.precio)}</td>
-    //     <td>${formateador.format(totalProducto)}</td>
-    //     </tr>`;
-    // }
+    for (const producto of movimiento_select.items_movimiento) {
+        // Aumentar el total
+        const totalProducto = producto.cantidad * producto.precio;
+        subtotal += totalProducto;
+        // Y concatenar los productos
+        tabla += `<tr>
+        <td>${producto.nombre}</td>
+        <td>${producto.cantidad}</td>
+        <td>${formateador.format(producto.precio)}</td>
+        <td>${formateador.format(totalProducto)}</td>
+        </tr>`;
+    }
+    
     const descuento = 0;
     const subtotalConDescuento = subtotal - descuento;
     const impuestos = subtotalConDescuento * 0.16
@@ -399,12 +433,13 @@ export const getReporte = async (req, res) => {
     contenidoHtml = contenidoHtml.replace("{{tablaProductos}}", tabla);
 
     // Y también los otros valores
-
-    // contenidoHtml = contenidoHtml.replace("{{fecha}}", movimiento.fecha.toLocaleDateString());
-    // contenidoHtml = contenidoHtml.replace("{{estado}}", movimiento.estado);
+    contenidoHtml = contenidoHtml.replace("{{orden_compra}}", codigo);
+    // contenidoHtml = contenidoHtml.replace("{{fecha}}", movimiento_select.fecha);
+    // contenidoHtml = contenidoHtml.replace("{{fechaActualizacion}}", movimiento_select.fechaActualizacion);
+    contenidoHtml = contenidoHtml.replace("{{estado}}", movimiento_select.estado);
     // contenidoHtml = contenidoHtml.replace("{{tipo}}", movimiento.tipo);
-    // contenidoHtml = contenidoHtml.replace("{{factura}}", movimiento.factura);
-    // contenidoHtml = contenidoHtml.replace("{{responsable}}", movimiento.name_responsable);
+    contenidoHtml = contenidoHtml.replace("{{orden_compra}}", movimiento_select.orden_compra);
+    contenidoHtml = contenidoHtml.replace("{{responsable}}", movimiento_select.cliente);
     contenidoHtml = contenidoHtml.replace("{{subtotal}}", formateador.format(subtotal));
     contenidoHtml = contenidoHtml.replace("{{descuento}}", formateador.format(descuento));
     contenidoHtml = contenidoHtml.replace("{{subtotalConDescuento}}", formateador.format(subtotalConDescuento));

@@ -14,7 +14,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-xs-10 ">
-                <h1>Movimiento de {{tipo}} de Inventario</h1>
+                <h1>Movimiento de Salida del Inventario</h1>
             </div>
             <div class="col-xs-2">
                 <!--<img class="img img-responsive" src="" alt="Logotipo">-->
@@ -27,14 +27,13 @@
                 <h1 class="h6">https://unmsm.edu.pe</h1>
             </div>
             <div class="col-xs-2 text-center">
-                <div class="col-xs-10">
-                    <h1 class="h6">N° {{codigoMovimiento}} </h1>
-                </div>
-                <strong>Fecha</strong>
+                <!-- <strong>Fecha Registro</strong>
                 <br>{{fecha}} <br>
-                <strong>Factura No.</strong>
+                <strong>Fecha Actualización</strong>
+                <br>{{fechaActualizacion}} <br> -->
+                <strong>No. Orden de compra</strong>
                 <br>
-                {{factura}} <br>
+                {{orden_compra}} <br>
                 <strong>Estado</strong>
                 <br>
                 {{estado}}
@@ -43,7 +42,7 @@
         <hr>
         <div class="row text-center" style="margin-bottom: 2rem;">
             <div class="col-xs-6">
-                <h1 class="h2">Responsable</h1>
+                <h1 class="h2">Cliente</h1>
                 <strong>{{responsable}}</strong>
             </div>
             <div class="col-xs-6">
@@ -57,7 +56,6 @@
                     <thead>
                         <tr>
                             <th>Nombre</th>
-                            <th>Descripción</th>
                             <th>Cantidad</th>
                             <th>Precio unitario</th>
                             <th>Total</th>
@@ -95,11 +93,11 @@
                 </table>
             </div>
         </div>
-        <div class="row">
+        <!-- <div class="row">
             <div class="col-xs-12 text-center">
                 <p class="h5">Gracias por su compra</p>
             </div>
-        </div>
+        </div> -->
     </div>
 </body>
 
