@@ -79,4 +79,6 @@ stages:
               $(imagePullSecret)
             containers: |
               $(containerRegistry)/$(imageRepository):$(tag)
+            rolloutStatusTimeout: '10'
+      
             
