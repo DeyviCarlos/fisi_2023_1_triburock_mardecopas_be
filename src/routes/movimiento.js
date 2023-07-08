@@ -17,6 +17,7 @@ router.put('/entrada/anular_mov/:_id',[authJwt.verifyToken,authJwt.isJefeAlmacen
 router.get('/entrada/aprobados',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getMovimientosAprobadosEntrada);
 router.get('/entrada/anulados',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getMovimientosAnuladosEntrada);
 router.get('/entrada/items/:_id',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getItemsEntrada);
+router.get('/entrada/movEntradaByCode/:codigo'/*,[authJwt.verifyToken,authJwt.isJefeOrAlmacenero]*/, movCtrl.obtenerMovEntradaCompletoByCode);
 //-----------movimientos salida-----------------------------------
 router.post('/salida/create',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.createMovimientoSalida);
 router.get('/salida/searchByCode/:codigo',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getMovimientoByCodeSalida);
@@ -24,5 +25,5 @@ router.put('/salida/anular_mov/:_id',[authJwt.verifyToken,authJwt.isJefeAlmacen]
 router.get('/salida/aprobados',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getMovimientosAprobadosSalida);
 router.get('/salida/anulados',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getMovimientosAnuladosSalida);
 router.get('/salida/items/:_id',[authJwt.verifyToken,authJwt.isJefeOrAlmacenero], movCtrl.getItemsSalida);
-
+router.get('/salida/movSalidaByCode/:codigo'/*,[authJwt.verifyToken,authJwt.isJefeOrAlmacenero]*/, movCtrl.obtenerMovSalidaCompletoByCode);
 module.exports= router;

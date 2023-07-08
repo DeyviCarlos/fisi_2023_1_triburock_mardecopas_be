@@ -822,6 +822,88 @@ export const getItemsEntrada = async (req, res) => {
     );
   }
 }
+// PARA EL REPORTE: DATOS COMPLETOS DE UN MOVIMIENTO DE ENTRADA JUNTO CON ITEMS INCLUIDOS (jonatan)
+export const obtenerMovEntradaCompletoByCode = async(req,res) =>{
+  try {
+    const { codigo } = req.params;
+
+    let sql2 = `CALL sp_obtener_entrada_por_code('${codigo}')`;
+    const pool2 = mysql.createPool(config_mysql)
+    const promiseQuery2 = promisify(pool2.query).bind(pool2)
+    const promisePoolEnd2 = promisify(pool2.end).bind(pool2)
+    const result2 = await promiseQuery2(sql2)
+    promisePoolEnd2()
+    const movimiento_select = JSON.parse(JSON.stringify(result2[0][0]));
+    
+    if (!movimiento_select) {
+      return res.status(404).json({
+        status: 404,
+        message: "No se encontró al movimiento que se quiere anular",
+      });
+    }
+
+    let sql3 = `CALL sp_obtener_productos_movimiento_entrada('${movimiento_select.id}')`;
+    const pool3 = mysql.createPool(config_mysql)
+    const promiseQuery3 = promisify(pool3.query).bind(pool3)
+    const promisePoolEnd3 = promisify(pool3.end).bind(pool3)
+    const result3 = await promiseQuery3(sql3)
+    promisePoolEnd3()
+    const lista_items_mov = JSON.parse(JSON.stringify(result3[0]));
+    movimiento_select["items_movimiento"]=lista_items_mov;
+    return res.json({
+      status: 200,
+      message: "Se ha obtenido el movimiento completo por codigo",
+      data: {movimiento_select}
+    });   
+  }catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: 500,
+      message: "Ha aparecido un ERROR al momento de anular el movimiento",
+    });
+  }
+}
+export const obtenerMovSalidaCompletoByCode = async(req,res) =>{
+  try {
+    const { codigo } = req.params;
+
+    let sql2 = `CALL sp_obtener_salida_por_code('${codigo}')`;
+    const pool2 = mysql.createPool(config_mysql)
+    const promiseQuery2 = promisify(pool2.query).bind(pool2)
+    const promisePoolEnd2 = promisify(pool2.end).bind(pool2)
+    const result2 = await promiseQuery2(sql2)
+    promisePoolEnd2()
+    const movimiento_select = JSON.parse(JSON.stringify(result2[0][0]));
+   
+    
+    if (!movimiento_select) {
+      return res.status(404).json({
+        status: 404,
+        message: "No se encontró al movimiento que se quiere anular",
+      });
+    }
+
+    let sql3 = `CALL sp_obtener_productos_movimiento_salida('${movimiento_select.id}')`;
+    const pool3 = mysql.createPool(config_mysql)
+    const promiseQuery3 = promisify(pool3.query).bind(pool3)
+    const promisePoolEnd3 = promisify(pool3.end).bind(pool3)
+    const result3 = await promiseQuery3(sql3)
+    promisePoolEnd3()
+    const lista_items_mov = JSON.parse(JSON.stringify(result3[0]));
+    movimiento_select["items_movimiento"]=lista_items_mov;
+    return res.json({
+      status: 200,
+      message: "Se ha obtenido el movimiento de salida completo por codigo",
+      data: {movimiento_select,lista_items_mov}
+    });   
+  }catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      status: 500,
+      message: "Ha aparecido un ERROR al momento de anular el movimiento",
+    });
+  }
+}
 
 
 //--------------------------------movimientos salida-----------------------------

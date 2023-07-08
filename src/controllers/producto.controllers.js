@@ -112,11 +112,22 @@ export const getProductoByCode = async (req, res) => {
 
     promisePoolEnd()
     const producto = Object.values(JSON.parse(JSON.stringify(result[0])));
+    const id_categoria= producto[0].id_categoria
+    console.log(id_categoria);
+    let sql3 = `CALL sp_obtener_categoria_por_id('${id_categoria}')`;
+    const pool3 = mysql.createPool(config_mysql)
+    const promiseQuery3 = promisify(pool3.query).bind(pool3)
+    const promisePoolEnd3 = promisify(pool3.end).bind(pool3)
+    const result3 = await promiseQuery3(sql3)
+    promisePoolEnd3()
+    const infoCategoria = JSON.parse(JSON.stringify(result3[0]));
+    const nombreCategoria= infoCategoria[0].nombre;    
+    producto[0]["categoria"]=nombreCategoria;
     return res.json(
       {
         status: 200,
         message: "Se ha obtenido el producto solicitado por codigo",
-        data: producto
+        data:producto
       }
     );
   } catch (error) {
