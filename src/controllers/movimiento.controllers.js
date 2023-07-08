@@ -366,6 +366,7 @@ export const getReporte = async (req, res) => {
   try{
     const { codigo } = req.params;
     console.log("codigo: ",codigo)
+    //obtienes el movimiento
     // let movimiento = await Movimiento.findOne({ codigo: codigo });
 
     // console.log(movimiento)
