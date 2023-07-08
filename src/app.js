@@ -26,7 +26,7 @@ app.use('/ne-gestion-productos/servicio-al-cliente/v1',productosRoutes)
 app.use('/ne-gestion-categorias/servicio-al-cliente/v1',categoriaRoutes)
 app.use('/api/auth',auhtRoutes)
 app.use('/ne-gestion-usuarios/servicio-al-cliente/v1',usersRoutes)
-app.use('/api/movimiento',movimientoRoutes)
+app.use('/ne-gestion-movimientos/servicio-al-cliente/v1',movimientoRoutes)
 app.use('/api/roles',rolRoutes)
 
 
