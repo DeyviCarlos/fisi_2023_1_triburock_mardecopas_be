@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, '../reportes')));
 //createRoles();
 app.use(morgan("dev"));
 app.use(express.json());
-app.use('/api/productos',productosRoutes)
+app.use('/ne-gestion-productos/servicio-al-cliente/v1',productosRoutes)
 app.use('/api/categoria',categoriaRoutes)
 app.use('/api/auth',auhtRoutes)
 app.use('/api/users',usersRoutes)
