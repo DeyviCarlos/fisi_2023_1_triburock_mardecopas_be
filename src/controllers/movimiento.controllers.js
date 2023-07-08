@@ -16,7 +16,7 @@ const { promisify } = require('util')
 var config_mysql = require('../config_mysql.js')
 
 
-const ubicacionPlantilla = require.resolve("./../tpl/plantilla.html");
+//const ubicacionPlantilla = require.resolve("./../tpl/plantilla.html");
 
 // Autor: Jonatan Pacora
 // 30/11/22
@@ -362,125 +362,125 @@ export const getMovimientosAnulados = async (req, res) => {
 // 14/12/22
 /* el codigo aqui es usado para el
  CUS 29 generar reporte de movimiento*/
-export const getReporte = async (req, res) => {
-  try{
-    const { codigo } = req.params;
-    console.log("codigo: ",codigo)
-    //obtienes el movimiento
+// export const getReporte = async (req, res) => {
+//   try{
+//     const { codigo } = req.params;
+//     console.log("codigo: ",codigo)
+//     //obtienes el movimiento
 
-    let sql2 = `CALL sp_obtener_salida_por_code('${codigo}')`;
-    const pool2 = mysql.createPool(config_mysql)
-    const promiseQuery2 = promisify(pool2.query).bind(pool2)
-    const promisePoolEnd2 = promisify(pool2.end).bind(pool2)
-    const result2 = await promiseQuery2(sql2)
-    promisePoolEnd2()
-    const movimiento_select = JSON.parse(JSON.stringify(result2[0][0]));
+//     let sql2 = `CALL sp_obtener_salida_por_code('${codigo}')`;
+//     const pool2 = mysql.createPool(config_mysql)
+//     const promiseQuery2 = promisify(pool2.query).bind(pool2)
+//     const promisePoolEnd2 = promisify(pool2.end).bind(pool2)
+//     const result2 = await promiseQuery2(sql2)
+//     promisePoolEnd2()
+//     const movimiento_select = JSON.parse(JSON.stringify(result2[0][0]));
    
     
-    if (!movimiento_select) {
-      return res.status(404).json({
-        status: 404,
-        message: "No se encontró al movimiento que se quiere anular",
-      });
-    }
+//     if (!movimiento_select) {
+//       return res.status(404).json({
+//         status: 404,
+//         message: "No se encontró al movimiento que se quiere anular",
+//       });
+//     }
 
-    let sql3 = `CALL sp_obtener_productos_movimiento_salida('${movimiento_select.id}')`;
-    const pool3 = mysql.createPool(config_mysql)
-    const promiseQuery3 = promisify(pool3.query).bind(pool3)
-    const promisePoolEnd3 = promisify(pool3.end).bind(pool3)
-    const result3 = await promiseQuery3(sql3)
-    promisePoolEnd3()
-    const lista_items_mov = JSON.parse(JSON.stringify(result3[0]));
-    movimiento_select["items_movimiento"]=lista_items_mov;
+//     let sql3 = `CALL sp_obtener_productos_movimiento_salida('${movimiento_select.id}')`;
+//     const pool3 = mysql.createPool(config_mysql)
+//     const promiseQuery3 = promisify(pool3.query).bind(pool3)
+//     const promisePoolEnd3 = promisify(pool3.end).bind(pool3)
+//     const result3 = await promiseQuery3(sql3)
+//     promisePoolEnd3()
+//     const lista_items_mov = JSON.parse(JSON.stringify(result3[0]));
+//     movimiento_select["items_movimiento"]=lista_items_mov;
   
 
-    console.log("data: ", movimiento_select)
+//     console.log("data: ", movimiento_select)
 
-    // return res.json({
-    //   status: 200,
-    //   message: "Se ha obtenido el movimiento completo por codigo",
-    //   data: {movimiento_select}
-    // });   
+//     // return res.json({
+//     //   status: 200,
+//     //   message: "Se ha obtenido el movimiento completo por codigo",
+//     //   data: {movimiento_select}
+//     // });   
 
 
 
-    let contenidoHtml = fs.readFileSync(ubicacionPlantilla, 'utf8')
-    console.log(contenidoHtml)
-    contenidoHtml = contenidoHtml.replace("{{codigoMovimiento}}", codigo);
+//     //let contenidoHtml = fs.readFileSync(ubicacionPlantilla, 'utf8')
+//     console.log(contenidoHtml)
+//     contenidoHtml = contenidoHtml.replace("{{codigoMovimiento}}", codigo);
 
-    const formateador = new Intl.NumberFormat("en", { style: "currency", "currency": "PEN" });
-    // Generar el HTML de la tabla
-    let tabla = "";
-    let subtotal = 0;
-    for (const producto of movimiento_select.items_movimiento) {
-        // Aumentar el total
-        const totalProducto = producto.cantidad * producto.precio;
-        subtotal += totalProducto;
-        // Y concatenar los productos
-        tabla += `<tr>
-        <td>${producto.nombre}</td>
-        <td>${producto.cantidad}</td>
-        <td>${formateador.format(producto.precio)}</td>
-        <td>${formateador.format(totalProducto)}</td>
-        </tr>`;
-    }
+//     const formateador = new Intl.NumberFormat("en", { style: "currency", "currency": "PEN" });
+//     // Generar el HTML de la tabla
+//     let tabla = "";
+//     let subtotal = 0;
+//     for (const producto of movimiento_select.items_movimiento) {
+//         // Aumentar el total
+//         const totalProducto = producto.cantidad * producto.precio;
+//         subtotal += totalProducto;
+//         // Y concatenar los productos
+//         tabla += `<tr>
+//         <td>${producto.nombre}</td>
+//         <td>${producto.cantidad}</td>
+//         <td>${formateador.format(producto.precio)}</td>
+//         <td>${formateador.format(totalProducto)}</td>
+//         </tr>`;
+//     }
     
-    const descuento = 0;
-    const subtotalConDescuento = subtotal - descuento;
-    const impuestos = subtotalConDescuento * 0.16
-    const total = subtotalConDescuento + impuestos;
-    // Remplazar el valor {{tablaProductos}} por el verdadero valor
-    contenidoHtml = contenidoHtml.replace("{{tablaProductos}}", tabla);
+//     const descuento = 0;
+//     const subtotalConDescuento = subtotal - descuento;
+//     const impuestos = subtotalConDescuento * 0.16
+//     const total = subtotalConDescuento + impuestos;
+//     // Remplazar el valor {{tablaProductos}} por el verdadero valor
+//     contenidoHtml = contenidoHtml.replace("{{tablaProductos}}", tabla);
 
-    // Y también los otros valores
-    contenidoHtml = contenidoHtml.replace("{{orden_compra}}", codigo);
-    // contenidoHtml = contenidoHtml.replace("{{fecha}}", movimiento_select.fecha);
-    // contenidoHtml = contenidoHtml.replace("{{fechaActualizacion}}", movimiento_select.fechaActualizacion);
-    contenidoHtml = contenidoHtml.replace("{{estado}}", movimiento_select.estado);
-    // contenidoHtml = contenidoHtml.replace("{{tipo}}", movimiento.tipo);
-    contenidoHtml = contenidoHtml.replace("{{orden_compra}}", movimiento_select.orden_compra);
-    contenidoHtml = contenidoHtml.replace("{{responsable}}", movimiento_select.cliente);
-    contenidoHtml = contenidoHtml.replace("{{subtotal}}", formateador.format(subtotal));
-    contenidoHtml = contenidoHtml.replace("{{descuento}}", formateador.format(descuento));
-    contenidoHtml = contenidoHtml.replace("{{subtotalConDescuento}}", formateador.format(subtotalConDescuento));
-    contenidoHtml = contenidoHtml.replace("{{impuestos}}", formateador.format(impuestos));
-    contenidoHtml = contenidoHtml.replace("{{total}}", formateador.format(subtotal));
-    const f=new Date()
-    var fecha_archivo=f.toLocaleDateString().replaceAll('/','-')
-    var archivo_generado="./reportes/movimiento-"+codigo+" - "+fecha_archivo+".pdf";
-    var archivo_generado_azure="reportes/movimiento-"+codigo+" - "+fecha_archivo+".pdf";
-    console.log(archivo_generado_azure)
-    var nombre_archivopdf = "movimiento-"+codigo+" - "+fecha_archivo+".pdf"
-    console.log(nombre_archivopdf)
+//     // Y también los otros valores
+//     contenidoHtml = contenidoHtml.replace("{{orden_compra}}", codigo);
+//     // contenidoHtml = contenidoHtml.replace("{{fecha}}", movimiento_select.fecha);
+//     // contenidoHtml = contenidoHtml.replace("{{fechaActualizacion}}", movimiento_select.fechaActualizacion);
+//     contenidoHtml = contenidoHtml.replace("{{estado}}", movimiento_select.estado);
+//     // contenidoHtml = contenidoHtml.replace("{{tipo}}", movimiento.tipo);
+//     contenidoHtml = contenidoHtml.replace("{{orden_compra}}", movimiento_select.orden_compra);
+//     contenidoHtml = contenidoHtml.replace("{{responsable}}", movimiento_select.cliente);
+//     contenidoHtml = contenidoHtml.replace("{{subtotal}}", formateador.format(subtotal));
+//     contenidoHtml = contenidoHtml.replace("{{descuento}}", formateador.format(descuento));
+//     contenidoHtml = contenidoHtml.replace("{{subtotalConDescuento}}", formateador.format(subtotalConDescuento));
+//     contenidoHtml = contenidoHtml.replace("{{impuestos}}", formateador.format(impuestos));
+//     contenidoHtml = contenidoHtml.replace("{{total}}", formateador.format(subtotal));
+//     const f=new Date()
+//     var fecha_archivo=f.toLocaleDateString().replaceAll('/','-')
+//     var archivo_generado="./reportes/movimiento-"+codigo+" - "+fecha_archivo+".pdf";
+//     var archivo_generado_azure="reportes/movimiento-"+codigo+" - "+fecha_archivo+".pdf";
+//     console.log(archivo_generado_azure)
+//     var nombre_archivopdf = "movimiento-"+codigo+" - "+fecha_archivo+".pdf"
+//     console.log(nombre_archivopdf)
 
-    pdf.create(contenidoHtml).toFile(archivo_generado, (error) => {
-        if (error) {
-            console.log("Error creando PDF: " + error)
-            return res.status(500).json({mensaje:"Error al obtener el reporte", status: "500"})
-        } else {
-            console.log("PDF creado correctamente");
-        }
-    });
-    setTimeout(() => {
-      let rutaPdf = ""
-      azurePdf(archivo_generado_azure).then(response => {
-        rutaPdf = response;
-        console.log("pdf descargado: ", rutaPdf)
-        res.set({'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename=${nombre_archivopdf}`})
-        response.readableStreamBody.pipe(res);
-      }).catch(error => {
-        return res.status(500).json({ mensaje: "Error al obtener el reporte", status: "500" })
-      });
-    }, 4000)    
-  } catch (error) {
-    return res.status(500).json(
-      {status: 500,
-      message: "Se ha producido un ERROR al obtener el reporte",
-      }
-      );
-  }
-}
+//     pdf.create(contenidoHtml).toFile(archivo_generado, (error) => {
+//         if (error) {
+//             console.log("Error creando PDF: " + error)
+//             return res.status(500).json({mensaje:"Error al obtener el reporte", status: "500"})
+//         } else {
+//             console.log("PDF creado correctamente");
+//         }
+//     });
+//     setTimeout(() => {
+//       let rutaPdf = ""
+//       azurePdf(archivo_generado_azure).then(response => {
+//         rutaPdf = response;
+//         console.log("pdf descargado: ", rutaPdf)
+//         res.set({'Content-Type': 'application/pdf',
+//         'Content-Disposition': `attachment; filename=${nombre_archivopdf}`})
+//         response.readableStreamBody.pipe(res);
+//       }).catch(error => {
+//         return res.status(500).json({ mensaje: "Error al obtener el reporte", status: "500" })
+//       });
+//     }, 4000)    
+//   } catch (error) {
+//     return res.status(500).json(
+//       {status: 500,
+//       message: "Se ha producido un ERROR al obtener el reporte",
+//       }
+//       );
+//   }
+// }
 
 //metodo para cargar y descargar el pdf de azure
 const azurePdf = async (archivo_generado_azure) => {
