@@ -6,6 +6,7 @@ import * as categoriasCtrl from '../controllers/categoria.controllers';
 
 import {authJwt} from '../middlewares'
 
+
 // Definimos las rutas::
 router.get('/read', categoriasCtrl.getCategorias);
 router.get('/inhabilitados', categoriasCtrl.getCategoriasInhabilitadas);
