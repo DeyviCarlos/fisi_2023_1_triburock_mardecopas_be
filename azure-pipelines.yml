@@ -73,10 +73,19 @@ stages:
             kubernetesServiceConnection: 'aks-conexion'
             namespace: 'default'
             manifests: |
+        - task: KubernetesManifest@1
+          inputs:
+            action: 'deploy'
+            connectionType: 'kubernetesServiceConnection'
+            kubernetesServiceConnection: 'aks-conexion'
+            namespace: 'default'
+            manifests: |
               $(Pipeline.Workspace)/manifests/deployment.yml
               $(Pipeline.Workspace)/manifests/service.yml
-            imagePullSecrets: |
-              $(imagePullSecret)
             containers: |
               $(containerRegistry)/$(imageRepository):$(tag)
+            imagePullSecrets: |
+              $(imagePullSecret)
+            rolloutStatusTimeout: '10'
+      
             
