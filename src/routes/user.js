@@ -7,7 +7,7 @@ const router = Router();
 // ROUTES
 router.get('/obtener-usuarios-habilitados', [verifyToken, isAdmin],userCtrl.getUsers);
 router.get('/obtener-usuarios-deshabilitados',[verifyToken, isAdmin], userCtrl.getUsersInhabiltados);
-router.get('/obtener-usuarios-por-dni/:dni', [verifyToken, isAdmin],userCtrl.getUserDni);
+router.get('/obtener-usuarios/:dni', [verifyToken, isAdmin],userCtrl.getUserDni);
 router.post("/agregar-usuarios",[verifyToken, isAdmin,checkExistingUser], userCtrl.createUser);
 router.put("/actualizar-usuarios/:_id", [verifyToken, isAdmin], userCtrl.updateUserById);
 router.put("/dar-baja-usuarios/:_id", [verifyToken, isAdmin],userCtrl.updateUserInhabilitar);

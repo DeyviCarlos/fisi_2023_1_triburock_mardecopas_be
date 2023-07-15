@@ -560,6 +560,8 @@ export const createMovimientoEntrada = async (req, res) => {
         let stock_new = Producto_item.stock + item.cantidad;
         console.log("new stock", stock_new);
         let code_product = item.codigo_product;
+        console.log("codigos del los items")
+        console.log(code_product)
         // Actualizar Colleccion Productos
         let sql2 = `CALL sp_actualizar_stock_producto_por_codigo('${item_code}','${stock_new}')`;
         const pool2 = mysql.createPool(config_mysql)

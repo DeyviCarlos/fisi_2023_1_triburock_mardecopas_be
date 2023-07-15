@@ -5,9 +5,9 @@ import {authJwt} from '../middlewares'
 // Definimos las rutas::
 router.get('/obtener-productos-habilitados', productosCtrl.getProductos);
 router.get('/obtener-productos-deshabilitados', productosCtrl.getProductosInhabilitados);
-router.get('/obtener-productos/por-codigo/:codigo', productosCtrl.getProductoByCode);
+router.get('/obtener-productos/codigo/:codigo', productosCtrl.getProductoByCode);
 router.get('/obtener-productos-stock-minimo', productosCtrl.getProductoByStockMinimo); /// Enpoint de listar stock minimo
-router.get('/obtener-productos/por-id/:_id', productosCtrl.getProductoById);
+router.get('/obtener-productos/:_id', productosCtrl.getProductoById);
 
 router.post('/agregar-productos', [authJwt.verifyToken,authJwt.isJefeAlmacen],productosCtrl.createProducto);
 router.put('/actualizar-productos/:_id',[authJwt.verifyToken,authJwt.isJefeAlmacen], productosCtrl.updateProductById);
